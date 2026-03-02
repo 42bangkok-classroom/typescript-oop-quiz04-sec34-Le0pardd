@@ -12,7 +12,7 @@ export class MissionService {
     { id: 4, codename: 'BLACKOUT', status: 'ACTIVE' },
     { id: 5, codename: 'ECHO_FALLS', status: 'COMPLETED' },
     { id: 6, codename: 'GHOST_RIDER', status: 'COMPLETED' },
-  ]; 
+  ];
 
   getSummary() {
     return this.missions.reduce((acc, mission) => {
