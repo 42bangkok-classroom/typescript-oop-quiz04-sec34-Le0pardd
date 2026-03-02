@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IMission, IMissionResponse } from './mission.interface';
@@ -27,7 +27,6 @@ export class MissionService {
 
   findAll(): IMissionResponse[] {
     const filePath = path.join(process.cwd(), 'data', 'missions.json');
-
     const fileData = fs.readFileSync(filePath, 'utf-8');
     const missionsFromJson = JSON.parse(fileData) as IMission[];
 
@@ -46,5 +45,51 @@ export class MissionService {
         durationDays,
       };
     });
+  }
+
+  findOne(id: string, clearance: string): IMission {
+    const filePath = path.join(process.cwd(), 'data', 'missions.json');
+    const fileData = fs.readFileSync(filePath, 'utf-8');
+    const missionsFromJson = JSON.parse(fileData) as IMission[];
+
+    const mission = missionsFromJson.find((m) => m.id === id);
+
+    if (!mission) {
+      throw new NotFoundException(`Mission with ID ${id} not found`);
+    }
+
+    const result = { ...mission };
+    const isHighRisk =
+      result.riskLevel === 'HIGH' || result.riskLevel === 'CRITICAL';
+
+    if (isHighRisk && clearance !== 'TOP_SECRET') {
+      result.targetName = '***REDACTED***';
+    }
+
+    return result;
+  }
+
+  remove(id: string): { message: string } {
+    const filePath = path.join(process.cwd(), 'data', 'missions.json');
+    const fileData = fs.readFileSync(filePath, 'utf-8');
+    const missionsFromJson = JSON.parse(fileData) as IMission[];
+
+    const missionIndex = missionsFromJson.findIndex((m) => m.id === id);
+
+    if (missionIndex === -1) {
+      throw new NotFoundException();
+    }
+
+    missionsFromJson.splice(missionIndex, 1);
+
+    fs.writeFileSync(
+      filePath,
+      JSON.stringify(missionsFromJson, null, 2),
+      'utf-8',
+    );
+
+    return {
+      message: `Mission ID ${id} has been successfully deleted.`,
+    };
   }
 }
