@@ -6,7 +6,7 @@ export class MissionController {
   constructor(private readonly missionService: MissionService) {}
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.missionService.findAll();
   }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 import * as path from 'path';
 import { IMission, IMissionResponse } from './mission.interface';
 
@@ -25,9 +25,10 @@ export class MissionService {
     );
   }
 
-  async findAll(): Promise<IMissionResponse[]> {
+  findAll(): IMissionResponse[] {
     const filePath = path.join(process.cwd(), 'data', 'missions.json');
-    const fileData = await fs.readFile(filePath, 'utf-8');
+
+    const fileData = fs.readFileSync(filePath, 'utf-8');
     const missionsFromJson = JSON.parse(fileData) as IMission[];
 
     return missionsFromJson.map((mission) => {
