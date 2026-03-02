@@ -14,12 +14,12 @@ export class MissionService {
     { id: 6, codename: 'GHOST_RIDER', status: 'COMPLETED' },
   ];
 
-  getSummary() {
-    return this.missions.reduce((acc, mission) => {
+  getSummary(): Record<string, number> {
+    return this.missions.reduce((acc: Record<string, number>, mission) => {
       const status = mission.status;
       acc[status] = (acc[status] || 0) + 1;
       return acc;
-    }, {});
+    }, {} as Record<string, number>); 
   }
 
   async findAll(): Promise<IMissionResponse[]> {
