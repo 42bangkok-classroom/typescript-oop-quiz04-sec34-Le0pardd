@@ -15,17 +15,20 @@ export class MissionService {
   ];
 
   getSummary(): Record<string, number> {
-    return this.missions.reduce((acc: Record<string, number>, mission) => {
-      const status = mission.status;
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>); 
+    return this.missions.reduce(
+      (acc: Record<string, number>, mission) => {
+        const status = mission.status;
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
   }
 
   async findAll(): Promise<IMissionResponse[]> {
     const filePath = path.join(process.cwd(), 'data', 'missions.json');
     const fileData = await fs.readFile(filePath, 'utf-8');
-    const missionsFromJson: IMission[] = JSON.parse(fileData);
+    const missionsFromJson = JSON.parse(fileData) as IMission[];
 
     return missionsFromJson.map((mission) => {
       let durationDays = -1;
